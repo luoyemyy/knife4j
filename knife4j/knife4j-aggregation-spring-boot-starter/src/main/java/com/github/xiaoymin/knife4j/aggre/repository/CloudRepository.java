@@ -90,18 +90,22 @@ public class CloudRepository extends AbstractRepository {
                     logger.debug("Cloud hearbeat start working...");
                     if (this.cloudSetting != null && CollectionUtil.isNotEmpty(this.cloudSetting.getRoutes())) {
                         this.cloudSetting.getRoutes().forEach(cloudRoute -> {
-                            String uri = cloudRoute.getUri();
                             String health = cloudRoute.getHealth();
                             StringBuilder urlBuilder = new StringBuilder();
-                            if (!StrUtil.startWith(uri, "http")) {
-                                urlBuilder.append("http://");
-                            }
-                            urlBuilder.append(uri);
-                            if (StrUtil.isNotBlank(health)) {
-                                urlBuilder.append(StrUtil.startWith(health, "/") ? health : "/" + health);
+                            if (health.startsWith("http")){
+                                urlBuilder.append(health);
+                            }else {
+                                String uri = cloudRoute.getUri();
+                                if (!StrUtil.startWith(uri, "http")) {
+                                    urlBuilder.append("http://");
+                                }
+                                urlBuilder.append(uri);
+                                if (StrUtil.isNotBlank(health)) {
+                                    urlBuilder.append(StrUtil.startWith(health, "/") ? health : "/" + health);
+                                }
                             }
                             if (logger.isDebugEnabled()) {
-                                logger.debug("hearbeat url:{}", urlBuilder.toString());
+                                logger.debug("hearbeat url:{}", urlBuilder);
                             }
                             HttpGet get = new HttpGet(urlBuilder.toString());
                             try {
